@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Returning to Content Manager…</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: #0b0b0f;
+      color: #f4f4f6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
+    }
+    main {
+      max-width: 380px;
+      width: 100%;
+      text-align: center;
+      background: #16161d;
+      border-radius: 20px;
+      padding: 40px 28px;
+    }
+    .logo {
+      width: 72px; height: 72px;
+      margin: 0 auto 20px;
+      border-radius: 20px;
+      background: linear-gradient(45deg, #f9ce34, #ee2a7b, #6228d7);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 34px;
+    }
+    h1 { font-size: 20px; margin-bottom: 10px; }
+    p { font-size: 14px; color: #a3a3ad; line-height: 1.6; margin-bottom: 24px; }
+    a.button {
+      display: block;
+      background: linear-gradient(45deg, #ee2a7b, #6228d7);
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 15px;
+      padding: 14px;
+      border-radius: 12px;
+    }
+    .hint { font-size: 12px; margin-top: 18px; margin-bottom: 0; }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="logo">&#128247;</div>
+    <h1>Authorization complete</h1>
+    <p id="status">Tap the button below to return to Content Manager and finish logging in.</p>
+    <a id="app-link" class="button" href="#">Open Content Manager</a>
+    <p class="hint">
+      If the app does not open, make sure it is installed on this device,
+      then go back to the app and try logging in again.
+    </p>
+  </main>
+
+  <script>
+    // ─────────────────────────────────────────────────────────────────
+    // TODO: replace with the `applicationId` of your Android build
+    // (android/app/build.gradle.kts → defaultConfig → applicationId).
+    // ─────────────────────────────────────────────────────────────────
+    var ANDROID_PACKAGE = 'com.example.instagram_content_manager';
+
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var query = params.toString();
+
+      // intent:// handoff targets our app directly (no app chooser).
+      // browser_fallback_url must be HTTPS — it reopens this page if the
+      // app is not installed so the user can read the instructions.
+      var intentUrl =
+        'intent://auth-callback' + (query ? '?' + query : '') +
+        '#Intent;scheme=igcm;package=' + ANDROID_PACKAGE +
+        ';S.browser_fallback_url=' +
+        encodeURIComponent(window.location.href.split('#')[0]) +
+        ';end';
+
+      var link = document.getElementById('app-link');
+      link.href = intentUrl;
+
+      // Best-effort automatic handoff; Chrome shows an "Open app" prompt.
+      window.location.replace(intentUrl);
+    })();
+  </script>
+</body>
+</html>
